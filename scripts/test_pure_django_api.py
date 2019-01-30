@@ -20,14 +20,17 @@ def retrieve_record(id):
 def create_update():
     new_data = {
         'user': 1,
-        'content': 'update 4',
+        'content': '',
         'image': ''
     }
 
-    r = requests.post("{}{}".format(BASE_URL, POST_ENDPOINT), data=new_data)
-    print(r.status_code)
+    r = requests.post("{}{}".format(BASE_URL, LIST_ENDPOINT), data=new_data)
+    if r.status_code == requests.codes.ok:
+        return r.json()
+    return r.status_code
+    
     # print(r.json())
 
 print(get_list())
 print(retrieve_record(2))
-create_update()
+print(create_update())
