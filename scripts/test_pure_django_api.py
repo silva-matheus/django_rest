@@ -17,20 +17,21 @@ def retrieve_record(id):
     r = requests.get("{}{}{}".format(BASE_URL, GET_ENDPOINT, id))
     return json.dumps(r.json())
 
-def create_update():
+def create_update(id):
     new_data = {
         'user': 1,
-        'content': '',
+        'content': 'update 5',
         'image': ''
     }
 
-    r = requests.post("{}{}".format(BASE_URL, LIST_ENDPOINT), data=new_data)
+    # r = requests.post("{}{}".format(BASE_URL, LIST_ENDPOINT), data=new_data)
+    r = requests.put("{}{}{}".format(BASE_URL, GET_ENDPOINT, id), data=new_data)#json.dumps(new_data))
     if r.status_code == requests.codes.ok:
         return r.json()
     return r.status_code
     
     # print(r.json())
 
-print(get_list())
+# print(get_list())
 print(retrieve_record(2))
-print(create_update())
+print(create_update(1))
