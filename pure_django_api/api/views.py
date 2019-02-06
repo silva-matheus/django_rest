@@ -34,16 +34,39 @@ class UpdateModelDetailAPIView(CSRFExamptMixin, View):
         if obj == None:
             error = json.dumps({"message": "Record doesn't exists"})
             return HttpResponse(error, content_type="application/json", status=404)
-        return HttpResponse(obj.serialize(), content_type="application/json", status=201)
+        delete = obj.delete()
+        print(delete)
+        data_response = json.dumps({"message": "Successfully delete."})
+        return HttpResponse(data_response, content_type="application/json", status=201)
 
     def put(self, request, id, *args, **kwargs):
+        print("start")
         obj = self.get_object(id=id)
-        if not is_json(request.body):
-            error_data = json.dumps({'message': 'Invalid data sent, plese send a valid JSON.'})
-            return HttpResponse(error_data, content_type="application/json", status=400)
+        print("deu o get pelo id")
         if obj == None:
+            print("Obj inválido")
             error = json.dumps({"message": "Record doesn't exists"})
             return HttpResponse(error, content_type="application/json", status=404)
+        if not is_json(request.body):
+            print("Json Inválido")
+            error_data = json.dumps({'message': 'Invalid data sent, plese send a valid JSON.'})
+            return HttpResponse(error_data, content_type="application/json", status=400)
+        print("vai dar load no obj")
+        passed_data = json.loads(request.body)
+        saved_data = json.loads(obj.serialize())
+        print("serializou o obj")
+        for key, value in passed_data.items():
+            saved_data[key] = value
+        print("terminou de montar o obj pro update")
+        form = UpdateModelForm(saved_data)
+        print("deu update no modelo")
+        if form.is_valid():
+            obj = form.save(commit=True)
+            obj_data = json.dumps(saved_data)
+            return HttpResponse(obj_data, content_type="application/json", status=201)
+        if form.errors:
+            data = json.dumps(form.errors)
+            return HttpResponse(data, content_type="application/json", status=406)
         return HttpResponse(obj.serialize(), content_type="application/json", status=201)
     
 
